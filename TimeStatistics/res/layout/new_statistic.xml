@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/background" >
+    
+    <TextView
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/name"
+        android:textColor="#2E64FE"
+        android:textColorHint="#2E64EE" />
+    
+    <EditText 
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:inputType="text"
+        android:id="@+id/etNewStatisticName"/>
+    
+    <TextView
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/attributes"
+        android:textColor="#2E64FE"
+        android:textColorHint="#2E64EE" />
+ 
+    <EditText
+        android:id="@+id/etNewAttributeName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" 
+        android:inputType="text">
+    </EditText>
+    
+    <TextView
+        android:id="@+id/tvNewAttributeType"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/newAttributeType"
+        android:textColor="#2E64FE"
+        android:textColorHint="#2E64EE"/>
+    
+     <Spinner
+        android:id="@+id/spinNewAttributeType"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" 
+        android:inputType="text">
+    </Spinner>
+    
+   <!-- 
+   
+    <Button
+        android:id="@+id/btNewAttribute" 
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+		android:text="@string/newbutton"
+		android:textColor="#2E64FE"
+        android:textColorHint="#2E64EE"
+        />
+    
+    <ListView 
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        />
+        
+         --> 
+    
+	<Button 
+	    android:id="@+id/btApplyNewStatistic" 
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+		android:text="@string/ok"
+		android:textColor="#2E64FE"
+        android:textColorHint="#2E64EE"
+        />
+    
+</LinearLayout>

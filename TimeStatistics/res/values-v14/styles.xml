@@ -1,0 +1,7 @@
+<resources>
+<style name="AppTheme" parent="android:Theme.NoTitleBar.Fullscreen">
+      <item name="android:windowNoTitle">true</item> 
+   </style>
+   <color name="backgroud">#AAAAFF</color>
+
+</resources>
