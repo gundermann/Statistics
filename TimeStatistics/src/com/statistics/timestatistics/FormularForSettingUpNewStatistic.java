@@ -9,6 +9,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -47,13 +48,29 @@ public class FormularForSettingUpNewStatistic extends Activity{
 			public void onClick(View v) {
 				addNewAttribute(((EditText) findViewById(R.id.etNewAttributeName)).getText().toString(), (DataType) typeSpinner.getSelectedItem());
 				
-				DBConnection dbc = new DBConnection(getApplicationContext());
-				dbc.insert(((EditText) findViewById(R.id.etNewStatisticName)).getText().toString());
-				dbc.createNewTable(((EditText) findViewById(R.id.etNewStatisticName)).getText().toString(), attributes);
+				String statisticName = ((EditText) findViewById(R.id.etNewStatisticName)).getText().toString();
 				
+				DBConnection dbc = new DBConnection(getApplicationContext());
+				dbc.insertStatistic("statistics", statisticName );
+
+				String tableName = "";
+				Cursor result = dbc.getAllStatNames();
+				result.moveToFirst();
+				  for(int i = 0; i< result.getCount();i++){
+					  if( statisticName.equals(result.getString(1))){
+						  tableName = statisticName + result.getString(0);
+						  System.out.println(tableName);
+						  break;
+					  }
+					  result.moveToNext();
+				  }
+				
+				dbc.createNewTable(tableName, attributes);
+				
+				dbc.saveStateInDatabase(tableName);
 				Intent in = new Intent(FormularForSettingUpNewStatistic.this, Acquisition.class);
 		        startActivity(in);
-		        System.exit(0);
+//		        System.exit(0);
 //				new Acquisition();
 			}
 		});

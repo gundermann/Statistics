@@ -1,7 +1,9 @@
 package com.statistics.timestatistics.dbcontroller;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
+import android.R.attr;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -54,7 +56,7 @@ public class DBConnection extends SQLiteOpenHelper{
     onCreate(db);
   }
   
-  public void insert(String name){
+  public void insertStatistic(String table, String name){
 	  long rowId = -1;
 	  
 	  try{
@@ -63,12 +65,54 @@ public class DBConnection extends SQLiteOpenHelper{
 	  ContentValues values = new ContentValues();
 	  values.put(STAT_NAME, name);
 	  
-	  rowId = db.insert(TABLE_NAME, null, values);
+	  rowId = db.insert(table, null, values);
 	  }catch (SQLException se){
 		  Log.e(TAG, "insert()", se);
 	  }finally{
 		  Log.d(TAG, "insert(): rowID=" +rowId);
 	  }
+  }
+  
+  public Cursor getSavedInstance(){
+	  SQLiteDatabase db = getReadableDatabase();
+	  
+	  Cursor c = db.rawQuery("SELECT selectedTable FROM saving" , null);
+	  return c;
+  }
+  
+  public void saveStateInDatabase(String value){
+	  discardSaving();
+	  
+	  HashMap<String, String> attributesToSave = new HashMap<String, String>();
+	  attributesToSave.put("selectedTable", SQLiteConstraintConverter.convert("Text"));
+	  createNewTable("saving", attributesToSave);
+	  
+	  insertSavePoint("saving", value);
+  }
+  
+  private void insertSavePoint(String table, String value) {
+	  long rowId = -1;
+	  
+	  try{
+	  SQLiteDatabase db = getWritableDatabase();
+	  
+	  ContentValues values = new ContentValues();
+	  values.put("selectedTable", value);
+	  
+	  rowId = db.insert(table, null, values);
+	  }catch (SQLException se){
+		  Log.e(TAG, "insert()", se);
+	  }finally{
+		  Log.d(TAG, "insert(): rowID=" +rowId);
+	  }
+//	  StringBuilder savingSQL = new StringBuilder();
+//	  savingSQL.append("insert into saving values (" + value + ")" );
+//	  getWritableDatabase().execSQL(savingSQL.toString());
+  }
+
+
+public void discardSaving(){
+	  getWritableDatabase().execSQL("DROP TABLE IF EXISTS saving" );
   }
   
   public void createNewTable(String name, HashMap<String, String> attributes){
@@ -86,7 +130,7 @@ public class DBConnection extends SQLiteOpenHelper{
 		  DATABASE_CREATE.append(attributes.get(attribute).toString());
 	  }
 	  
-	  DATABASE_CREATE.append(", time text);");
+	  DATABASE_CREATE.append(", time Text);");
 	  
 	  onCreate(getWritableDatabase());
   }
@@ -94,7 +138,7 @@ public class DBConnection extends SQLiteOpenHelper{
   private Cursor selectAllStatNames(){
 	  SQLiteDatabase db = getReadableDatabase();
 	  
-	  Cursor c = db.rawQuery("SELECT name FROM " + TABLE_NAME, null);
+	  Cursor c = db.rawQuery("SELECT * FROM " + TABLE_NAME, null);
 	  return c; 
   }
 

@@ -27,7 +27,7 @@ public class ListOfexistingStatistics extends Activity {
 		List<String> valueList = new ArrayList<String>();
 		result.moveToFirst();
 		for(int i = 0; i < result.getCount(); i++){
-			valueList.add(result.getString(0));
+			valueList.add(result.getString(1));
 			result.moveToNext();
 		}
 		

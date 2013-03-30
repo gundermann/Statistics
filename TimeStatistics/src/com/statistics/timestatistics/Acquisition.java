@@ -1,7 +1,11 @@
 package com.statistics.timestatistics;
 
+import com.statistics.timestatistics.dbcontroller.DBConnection;
+
 import android.app.Activity;
 import android.content.res.Resources;
+import android.database.Cursor;
+import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.view.Display;
 import android.view.View;
@@ -10,12 +14,29 @@ import android.widget.LinearLayout;
 
 public class Acquisition extends Activity{
 
-	public Acquisition(){
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
 		setContentView(R.layout.acquisition);
 		updateLayout(this.getCurrentFocus());
 		
+		String currentStatistic =  loadSelectedTable();
+		
+		System.out.println(currentStatistic);
+		
+		
+		
 		ImageButton btApply = (ImageButton) findViewById(R.id.btApplyNewValue);
 		ImageButton btClear = (ImageButton) findViewById(R.id.btClearFormular);
+	}
+
+	private String loadSelectedTable() {
+		DBConnection db = new DBConnection(getApplicationContext());
+		Cursor result = db.getSavedInstance();
+		result.moveToFirst();
+		String currentStatistic = result.getString(0);
+		
+		db.discardSaving();
+		return currentStatistic;
 	}
 
 	private void updateLayout(View view) {

@@ -30,6 +30,8 @@
             android:name="com.statistics.timestatistics.FormularForSettingUpNewStatistic"    />	    
     	<activity 
             android:name="com.statistics.timestatistics.ListOfexistingStatistics"    	    />
+    	<activity 
+            android:name="com.statistics.timestatistics.Acquisition"    	    />
     </application>
 
 </manifest>
