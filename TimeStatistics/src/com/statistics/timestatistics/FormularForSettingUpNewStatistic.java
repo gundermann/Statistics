@@ -68,6 +68,7 @@ public class FormularForSettingUpNewStatistic extends Activity{
 				dbc.createNewTable(tableName, attributes);
 				
 				dbc.saveStateInDatabase(tableName);
+				dbc.close();
 				Intent in = new Intent(FormularForSettingUpNewStatistic.this, Acquisition.class);
 		        startActivity(in);
 //		        System.exit(0);

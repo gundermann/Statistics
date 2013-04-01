@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
 
     <string name="app_name">TimeStatistics</string>
     <string name="action_settings">Settings</string>
@@ -12,4 +12,5 @@
     <string name="newAttribute">Enter new Attribute:</string>
     <string name="startStop">Start</string>
     <string name="newAttributeType">Type</string>
+    <string name="chronometer_initial_format">Initial format:<xliff:g id="initial-format">%</xliff:g></string>
 </resources>

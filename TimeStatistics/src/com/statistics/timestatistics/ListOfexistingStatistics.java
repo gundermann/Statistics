@@ -15,12 +15,13 @@ import android.widget.ListView;
 
 
 public class ListOfexistingStatistics extends Activity {
+
+	DBConnection dbc = new DBConnection(getApplicationContext());
 	
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.statistic_list);
 		
-		DBConnection dbc = new DBConnection(getApplicationContext());
 		Cursor result = dbc.getAllStatNames();
 		
 		ListView existingStats = (ListView) findViewById(R.id.listofexistingstats);
@@ -37,6 +38,7 @@ public class ListOfexistingStatistics extends Activity {
 
 	@Override
 	public void onBackPressed(){
+		dbc.close();
 		Intent in = new Intent(ListOfexistingStatistics.this, MainMenue.class);
         startActivity(in);
         System.exit(0);
