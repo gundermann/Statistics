@@ -6,8 +6,10 @@ import java.util.List;
 import com.statistics.timestatistics.dbcontroller.DBConnection;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.content.res.Resources;
 import android.database.Cursor;
+import android.database.CursorJoiner.Result;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.util.DisplayMetrics;
@@ -26,10 +28,13 @@ public class Acquisition extends Activity{
 	
 	Chronometer clock;
 	String time = null;
+	int counter;
 	
 	@SuppressWarnings("deprecation")
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+	}
+	public void setAcquisition(){
 		setContentView(R.layout.acquisition);
 		updateLayout(this.getCurrentFocus());
 		
@@ -37,31 +42,7 @@ public class Acquisition extends Activity{
 		List<String> attributes = loadAttributes(currentStatistic);
 		prepareLayout(attributes);
 		
-		System.out.println(currentStatistic);
-		
-    	Display display = getWindowManager().getDefaultDisplay();
-		
-		ImageButton btApply = (ImageButton) findViewById(R.id.btApplyNewValue);
-		btApply.setLayoutParams(new LinearLayout.LayoutParams(display.getWidth()/2, LayoutParams.WRAP_CONTENT));
-		btApply.setOnClickListener(new AdapterView.OnClickListener() {
-			
-			@Override
-			public void onClick(View arg0) {
-				StringBuilder sql = new StringBuilder();
-				sql.append("insert into " + currentStatistic + " values(");
-				
-				LinearLayout linLay = (LinearLayout) findViewById(R.id.acquisitionLayout);
-				for(int i = 0; i < linLay.getChildCount(); i++){
-					if( linLay.getChildAt(i) instanceof EditText){
-						sql.append(((EditText) linLay.getChildAt(i)).toString() + ", ");
-					}
-				}
-				sql.append(")");
-				
-				DBConnection db = new DBConnection(getApplicationContext());
-				db.getWritableDatabase().execSQL(sql.toString());
-			}
-		});
+		Display display = getWindowManager().getDefaultDisplay();
 		
 		ImageButton btClear = (ImageButton) findViewById(R.id.btClearFormular);
 		btClear.setLayoutParams(new LinearLayout.LayoutParams(display.getWidth()/2, LayoutParams.WRAP_CONTENT));
@@ -87,15 +68,51 @@ public class Acquisition extends Activity{
 					time = clock.getText().toString();
 				}
 				else{
+					clock.setBase(SystemClock.elapsedRealtime());
 					clock.start();
 					btClock.setText("Stop");
 				}
-				
+
 			}
 
 		});
 		
+		
+		ImageButton btApply = (ImageButton) findViewById(R.id.btApplyNewValue);
+		btApply.setLayoutParams(new LinearLayout.LayoutParams(display.getWidth()/2, LayoutParams.WRAP_CONTENT));
+		btApply.setOnClickListener(new AdapterView.OnClickListener() {
+			
+			@Override
+			public void onClick(View arg0) {
+				if ( isClockStarted() ){
+					clock.stop();
+					btClock.setText("Start");
+				}
+
+				DBConnection db = new DBConnection(getApplicationContext());
+				
+				List<String> valuesToSave = new ArrayList<String>();
+				LinearLayout linLay = (LinearLayout) findViewById(R.id.acquisitionLayout);
+				for(int i = 0; i < linLay.getChildCount(); i++){
+					if( linLay.getChildAt(i) instanceof EditText){
+						valuesToSave.add(((EditText) linLay.getChildAt(i)).getText().toString());
+					}
+				}
+				
+				db.insertValueIntoStatistic(currentStatistic, valuesToSave, clock.getText().toString());
+				db.close();
+
+				clock.setBase(SystemClock.elapsedRealtime());
+				clock.setText("00:00");
+				clearAllElements();
+			}
+		});
 	}
+	
+	@Override
+	public void onBackPressed(){
+		System.exit(0);
+	} 
 
 	private void clearAllElements() {
 		LinearLayout linLay = (LinearLayout) findViewById(R.id.acquisitionLayout);
@@ -138,6 +155,7 @@ public class Acquisition extends Activity{
 		String sql = "select * from " + table;
 		
 		DBConnection db = new DBConnection(getApplicationContext());
+		
 		Cursor result = db.getReadableDatabase().rawQuery(sql, null);
 		
 		//Das erste Attribut ist die Id und das letzte die Zeit
@@ -161,11 +179,11 @@ public class Acquisition extends Activity{
 		result.moveToFirst();
 		String currentStatistic = result.getString(0);
 		
-		db.discardSaving();
 		db.close();
 		return currentStatistic;
 	}
 
+	@SuppressWarnings("deprecation")
 	private void updateLayout(View view) {
 		
 		

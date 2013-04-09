@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/acquisitionLayout"
+    android:id="@+id/tableViewLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical" 
@@ -12,21 +12,33 @@
         android:orientation="horizontal">
 
         <ImageButton
-            android:id="@+id/btApplyNewValue"
+            android:id="@+id/btPrevValue"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@android:drawable/ic_input_add" />
+            android:src="@android:drawable/ic_media_previous" />
 
         <ImageButton
-            android:id="@+id/btClearFormular"
+            android:id="@+id/btNextValue"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@android:drawable/ic_delete" />
-        
+            android:src="@android:drawable/ic_media_next" />
+    
     </LinearLayout>
+        
+    <Button 
+        android:id="@+id/btAppendValue"
+        android:text="@string/newValue"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/text"
+        android:textColor="@color/white"
+		android:layout_marginTop="40dp"
+        android:paddingTop="20dp"
+        android:paddingBottom="20dp"
+        android:textSize="30sp"/>
     
     <Chronometer
-        android:id="@+id/clock"
+        android:id="@+id/clockValue"
         android:layout_width="fill_parent"
         android:format="@string/chronometer_initial_format"
         android:textSize="50sp"
@@ -37,18 +49,14 @@
         android:textColor="#2E64FE"
         android:textColorHint="#2E64EE"/>
     
-    <Button 
-        android:id="@+id/clockButton"
-        android:text="@string/startStop"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/text"
-        android:textColor="@color/white"
-        android:paddingTop="20dp"
-        android:paddingBottom="20dp"
-        android:layout_marginBottom="20dp"
-        android:textSize="30sp"/>
-    
+    <LinearLayout 
+        android:id="@+id/tableViewSpecificAttributes"
+        android:layout_width="match_parent"
+    	android:layout_height="match_parent"
+    	android:orientation="vertical" 
+    	android:background="@color/background">
+        
+    </LinearLayout>
     
     
     

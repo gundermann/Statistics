@@ -32,6 +32,8 @@
             android:name="com.statistics.timestatistics.ListOfexistingStatistics"    	    />
     	<activity 
             android:name="com.statistics.timestatistics.Acquisition"    	    />
+    	<activity 
+            android:name="com.statistics.timestatistics.SelectedStatisticView"    	    />
     </application>
 
 </manifest>

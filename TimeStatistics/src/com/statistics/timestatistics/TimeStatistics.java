@@ -42,16 +42,16 @@ public class TimeStatistics extends Activity {
 		t.start();
 	}
 	
+	@SuppressWarnings("deprecation")
 	private void correctLayout(View view) {
 		
 		LinearLayout linlay = (LinearLayout) ((FrameLayout) view).getChildAt(0);
 		
-		Resources resources = getApplicationContext().getResources();
     	Display display = getWindowManager().getDefaultDisplay();
-    	DisplayMetrics metrics = resources.getDisplayMetrics();
     	
-    	
-		linlay.getChildAt(0).setPadding(0, display.getWidth()-Math.round((44* (metrics.densityDpi/160f))), 0, 0);
+		linlay.getChildAt(0).setPadding(0, display.getHeight()/3, 0, 0);
+		
+		linlay.getChildAt(1).setPadding(0, display.getHeight()/2, 0, 0);
 	}
 	
 	@Override

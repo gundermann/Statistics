@@ -1,16 +1,14 @@
 package com.statistics.timestatistics.dbcontroller;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.List;
 
-import android.R.attr;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.provider.ContactsContract.Contacts.Data;
 import android.util.Log;
 
 
@@ -26,7 +24,7 @@ public class DBConnection extends SQLiteOpenHelper{
 	private Cursor c;
 	
   	//Name and Version of Database
-  	private static final String DATABASE_NAME = "costs.db";
+  	private static final String DATABASE_NAME = "statistics.db";
   	private static final int DATABASE_VERSION = 1;
 
   	// Database creation sql statement
@@ -73,6 +71,31 @@ public class DBConnection extends SQLiteOpenHelper{
 	  }
   }
   
+  public void insertValueIntoStatistic(String table, List<String> valuesToSave, String time){
+	  long rowId = -1;
+
+	  Cursor result = getReadableDatabase().rawQuery("select * from " + table, null);
+	  
+	  try{
+	  SQLiteDatabase db = getWritableDatabase();
+	  
+	  ContentValues values = new ContentValues();
+	  int counter = 1;
+	  for(String value : valuesToSave){
+		  values.put(result.getColumnName(counter), value);
+		  counter++;
+	  }
+	  
+	  values.put("time", time);
+	  
+	  rowId = db.insert(table, null, values);
+	  }catch (SQLException se){
+		  Log.e(TAG, "insert()", se);
+	  }finally{
+		  Log.d(TAG, "insert(): rowID=" +rowId);
+	  }
+  }
+  
   public Cursor getSavedInstance(){
 	  SQLiteDatabase db = getReadableDatabase();
 	  
@@ -83,8 +106,8 @@ public class DBConnection extends SQLiteOpenHelper{
   public void saveStateInDatabase(String value){
 	  discardSaving();
 	  
-	  HashMap<String, String> attributesToSave = new HashMap<String, String>();
-	  attributesToSave.put("selectedTable", SQLiteConstraintConverter.convert("Text"));
+	  List<String> attributesToSave = new ArrayList<String>();
+	  attributesToSave.add("selectedTable");
 	  createNewTable("saving", attributesToSave);
 	  
 	  insertSavePoint("saving", value);
@@ -115,7 +138,7 @@ public void discardSaving(){
 	  getWritableDatabase().execSQL("DROP TABLE IF EXISTS saving" );
   }
   
-  public void createNewTable(String name, HashMap<String, String> attributes){
+  public void createNewTable(String name, List<String> attributes){
 	  TABLE_NAME = name;
 	  DATABASE_CREATE = new StringBuilder();
 	  
@@ -123,11 +146,11 @@ public void discardSaving(){
 	  			+ TABLE_NAME + "(" + _ID
 	  			+ " integer primary key autoincrement ");
 	  
-	  for(String attribute : attributes.keySet()){
+	  for(String attribute : attributes){
 		  DATABASE_CREATE.append(", ");
 		  DATABASE_CREATE.append(attribute);
-		  DATABASE_CREATE.append(" ");
-		  DATABASE_CREATE.append(attributes.get(attribute).toString());
+		  DATABASE_CREATE.append(" Text");
+//		  DATABASE_CREATE.append(attributes.get(attribute).toString());
 	  }
 	  
 	  DATABASE_CREATE.append(", time Text);");

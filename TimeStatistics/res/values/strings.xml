@@ -13,4 +13,6 @@
     <string name="startStop">Start</string>
     <string name="newAttributeType">Type</string>
     <string name="chronometer_initial_format">Initial format:<xliff:g id="initial-format">%</xliff:g></string>
+	<string name="newValue">New value</string>
+	<string name="closeApp">press on back to close</string>
 </resources>
