@@ -74,6 +74,7 @@ public class SelectedStatisticView extends Acquisition {
 			}
 		});
 		
+		db.close();
 	}
 	
 	private void updateElements(Cursor result){
@@ -146,6 +147,7 @@ public class SelectedStatisticView extends Acquisition {
 			TextView tv = new TextView(getApplicationContext());
 			tv.setText(attribute + ":");
 			tv.setTextColor(R.color.text);
+			tv.setTextSize(25);
 			linLay.setLayoutParams(layPara);
 			linLay.addView(tv);
 			
@@ -176,6 +178,7 @@ public class SelectedStatisticView extends Acquisition {
 			list.add(result.getColumnName(i).toString());
 		}
 	
+		db.close();
 		return list;
 	}
 	

@@ -124,6 +124,10 @@ public class Acquisition extends Activity{
 			else if ( linLay.getChildAt(i) instanceof Chronometer ){
 				((Chronometer) linLay.getChildAt(i)).setText("");
 				((Chronometer) linLay.getChildAt(i)).setBase(SystemClock.elapsedRealtime());
+				((Chronometer) linLay.getChildAt(i)).stop();
+			}
+			else if ( linLay.getChildAt(i) instanceof Button){
+				((Button) linLay.getChildAt(i)).setText("Start");
 			}
 		}
 		
@@ -137,6 +141,7 @@ public class Acquisition extends Activity{
 			TextView tv = new TextView(getApplicationContext());
 			tv.setText(attribute + ":");
 			tv.setTextColor(R.color.text);
+			tv.setTextSize(25);
 			linLay.setLayoutParams(layPara);
 			linLay.addView(tv);
 			
@@ -163,6 +168,7 @@ public class Acquisition extends Activity{
 			list.add(result.getColumnName(i).toString());
 		}
 	
+		db.close();
 		return list;
 	}
 
