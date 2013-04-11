@@ -3,13 +3,16 @@ package com.statistics.timestatistics;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.common.StringModifier;
 import com.statistics.timestatistics.dbcontroller.DBConnection;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.database.CursorJoiner.Result;
+import android.database.sqlite.SQLiteException;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.util.DisplayMetrics;
@@ -33,12 +36,20 @@ public class Acquisition extends Activity{
 	@SuppressWarnings("deprecation")
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		if(isAcquisition()){
+			setAcquisition();
+		}
 	}
 	public void setAcquisition(){
 		setContentView(R.layout.acquisition);
-		updateLayout(this.getCurrentFocus());
 		
-		final String currentStatistic =  loadSelectedTable();
+		if(loadTime() != 0L){
+			clock.setBase(loadTime());
+			setClockStarted(wasClockStarted());
+		}
+		
+		updateLayout(this.getCurrentFocus());
+		final String currentStatistic = StringModifier.deleteSpaces(loadSelectedTable());
 		List<String> attributes = loadAttributes(currentStatistic);
 		prepareLayout(attributes);
 		
@@ -63,14 +74,12 @@ public class Acquisition extends Activity{
 				clock = (Chronometer) findViewById(R.id.clock);
 				
 				if ( isClockStarted() ){
-					clock.stop();
-					btClock.setText("Start");
+					setClockStarted(false);
 					time = clock.getText().toString();
 				}
 				else{
 					clock.setBase(SystemClock.elapsedRealtime());
-					clock.start();
-					btClock.setText("Stop");
+					setClockStarted(true);
 				}
 
 			}
@@ -85,8 +94,7 @@ public class Acquisition extends Activity{
 			@Override
 			public void onClick(View arg0) {
 				if ( isClockStarted() ){
-					clock.stop();
-					btClock.setText("Start");
+					setClockStarted(false);
 				}
 
 				DBConnection db = new DBConnection(getApplicationContext());
@@ -109,11 +117,44 @@ public class Acquisition extends Activity{
 		});
 	}
 	
+	public Button getBtClock(){
+		return (Button) findViewById(R.id.clockButton);
+	}
+	
+	private void setClockStarted(boolean started) {
+		if(started){
+			clock.start();
+			getBtClock().setText("Stop");
+		}
+		else{
+			clock.stop();
+			getBtClock().setText("Start");
+		}
+	}
+	
 	@Override
 	public void onBackPressed(){
+		DBConnection dbc = new DBConnection(getApplicationContext());
+		dbc.discardSaving();
+		dbc.close();
 		System.exit(0);
 	} 
 
+	protected boolean isAcquisition() {
+		try{
+		DBConnection db = new DBConnection(getApplicationContext());
+		Cursor result = db.getSavedInstance();
+		result.moveToFirst();
+		boolean isAcquisition = Boolean.parseBoolean(result.getString(1));
+		
+		db.close();
+		return isAcquisition;
+		}
+		catch(SQLiteException slqe){
+			return false;
+		}
+	}
+	
 	private void clearAllElements() {
 		LinearLayout linLay = (LinearLayout) findViewById(R.id.acquisitionLayout);
 		
@@ -132,7 +173,53 @@ public class Acquisition extends Activity{
 		}
 		
 	}
+	
+	private void saveTime(){
+		List<String> attributes = new ArrayList<String>();
+		attributes.add("started");
+		
+		List<String> values = new ArrayList<String>();
+		values.add(String.valueOf(isClockStarted()));
+		
+		DBConnection dbc = new DBConnection(getApplicationContext());
+		dbc.createNewTable("timesaving789", attributes);
+		dbc.insertValueIntoStatistic("timesaving789", values, String.valueOf(clock.getBase()));
+		dbc.close();
+	}
+	
+	private long loadTime(){
+		DBConnection dbc = new DBConnection(getApplicationContext());
+		try{
+		Cursor result = dbc.getReadableDatabase().rawQuery("select * from timesaving789", null);
+		result.moveToFirst();
+		return Long.parseLong(result.getString(2));
+		}
+		catch(SQLiteException sqle){
+			return 0L;
+		}
+		
+	}
+	
+	private boolean wasClockStarted(){
+		DBConnection dbc = new DBConnection(getApplicationContext());
 
+		Cursor result = dbc.getReadableDatabase().rawQuery("select * from timesaving789", null);
+		result.moveToFirst();
+		boolean wasStarted = Boolean.parseBoolean(result.getString(1));
+		
+		dbc.getWritableDatabase().execSQL("DROP TABLE IF EXISTS timesaving789");
+		dbc.close();
+		
+		return wasStarted;
+	}
+	
+	@Override
+	public void onConfigurationChanged(Configuration newConfig) {
+		saveTime();
+		super.onConfigurationChanged(newConfig);
+		setAcquisition();
+	}
+	
 	private void prepareLayout(List<String> attributes) {
 		LinearLayout linLay = (LinearLayout) findViewById(R.id.acquisitionLayout);
 		
@@ -179,7 +266,7 @@ public class Acquisition extends Activity{
 			return true;
 	}
 
-	private String loadSelectedTable() {
+	protected String loadSelectedTable() {
 		DBConnection db = new DBConnection(getApplicationContext());
 		Cursor result = db.getSavedInstance();
 		result.moveToFirst();
@@ -189,6 +276,7 @@ public class Acquisition extends Activity{
 		return currentStatistic;
 	}
 
+	
 	@SuppressWarnings("deprecation")
 	private void updateLayout(View view) {
 		

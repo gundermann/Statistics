@@ -3,10 +3,12 @@ package com.statistics.timestatistics;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.common.StringModifier;
 import com.statistics.timestatistics.dbcontroller.DBConnection;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.os.Bundle;
@@ -30,12 +32,14 @@ public class SelectedStatisticView extends Acquisition {
  
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		if(!isAcquisition()){
 		setContentView(R.layout.table_view);
 		updateLayout(this.getCurrentFocus());
 		
-		final String currentStatistic =  loadSelectedTable();
+		final String currentStatistic = StringModifier.deleteSpaces(loadSelectedTable());
 		List<String> attributes = loadAttributes(currentStatistic);
 		prepareLayout(attributes);
+		
 		
 		StringBuilder sql = new StringBuilder();
 		sql.append("select * from " + currentStatistic);
@@ -67,6 +71,9 @@ public class SelectedStatisticView extends Acquisition {
 			
 			@Override
 			public void onClick(View v) {
+				DBConnection dbc = new DBConnection(getApplicationContext());
+				dbc.saveStateInDatabase(currentStatistic, true);
+				dbc.close();
 //				Intent in = new Intent(SelectedStatisticView.this, Acquisition.class);
 //		        startActivity(in);
 //		        closeContextMenu();
@@ -75,8 +82,10 @@ public class SelectedStatisticView extends Acquisition {
 		});
 		
 		db.close();
+		}
 	}
 	
+
 	private void updateElements(Cursor result){
 		result.moveToPosition(counter);
 		
@@ -123,8 +132,8 @@ public class SelectedStatisticView extends Acquisition {
 	}
 	
 	@Override
-	public void onBackPressed(){
-		System.exit(0);
+	public void onConfigurationChanged(Configuration newConfig){
+		super.onConfigurationChanged(newConfig);
 	}
 	
 	private ImageButton getBtPrev(){
@@ -182,15 +191,15 @@ public class SelectedStatisticView extends Acquisition {
 		return list;
 	}
 	
-	private String loadSelectedTable() {
-		DBConnection db = new DBConnection(getApplicationContext());
-		Cursor result = db.getSavedInstance();
-		result.moveToFirst();
-		String currentStatistic = result.getString(0);
-		
-		db.close();
-		return currentStatistic;
-	}
+//	private String loadSelectedTable() {
+//		DBConnection db = new DBConnection(getApplicationContext());
+//		Cursor result = db.getSavedInstance();
+//		result.moveToFirst();
+//		String currentStatistic = result.getString(0);
+//		
+//		db.close();
+//		return currentStatistic;
+//	}
 	
 	@SuppressWarnings("deprecation")
 	private void updateLayout(View view) {

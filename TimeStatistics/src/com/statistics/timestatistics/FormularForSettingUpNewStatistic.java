@@ -3,6 +3,7 @@ package com.statistics.timestatistics;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.common.StringModifier;
 import com.statistics.timestatistics.dbcontroller.DBConnection;
 
 import android.app.Activity;
@@ -10,6 +11,7 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -29,6 +31,7 @@ public class FormularForSettingUpNewStatistic extends Acquisition{
 	
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		if(!isAcquisition()){
 		setContentView(R.layout.new_statistic);
 		
 //		ArrayAdapter<DataType> typeAdapter = new ArrayAdapter<DataType>(getApplicationContext(), R.layout.spinner, DataType.values());
@@ -64,6 +67,7 @@ public class FormularForSettingUpNewStatistic extends Acquisition{
 				  for(int i = 0; i< result.getCount();i++){
 					  if( statisticName.equals(result.getString(1))){
 						  tableName = statisticName + result.getString(0);
+						  tableName = StringModifier.deleteSpaces(tableName);
 						  System.out.println(tableName);
 						  break;
 					  }
@@ -72,7 +76,7 @@ public class FormularForSettingUpNewStatistic extends Acquisition{
 				
 				dbc.createNewTable(tableName, attributes);
 				
-				dbc.saveStateInDatabase(tableName);
+				dbc.saveStateInDatabase(tableName, true);
 				dbc.close();
 //				Intent in = new Intent(FormularForSettingUpNewStatistic.this, Acquisition.class);
 //		        startActivity(in);
@@ -82,9 +86,11 @@ public class FormularForSettingUpNewStatistic extends Acquisition{
 				}
 			}
 
+
 		});
+		}
 	}
-	
+
 	private void openNoTitleDialog() {
 		LayoutInflater li = LayoutInflater.from(this);
 		View promptsView = li.inflate(R.layout.dialog_no_title, null);
@@ -151,9 +157,8 @@ public class FormularForSettingUpNewStatistic extends Acquisition{
 	}
 
 	@Override
-	public void onBackPressed(){
-//		Intent in = new Intent(FormularForSettingUpNewStatistic.this, MainMenue.class);
-//        startActivity(in);
-        System.exit(0);
+	public void onConfigurationChanged(Configuration newConfig){
+		super.onConfigurationChanged(newConfig);
 	}
+	
 }

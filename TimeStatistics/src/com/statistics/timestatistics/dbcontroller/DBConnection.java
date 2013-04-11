@@ -99,21 +99,22 @@ public class DBConnection extends SQLiteOpenHelper{
   public Cursor getSavedInstance(){
 	  SQLiteDatabase db = getReadableDatabase();
 	  
-	  Cursor c = db.rawQuery("SELECT selectedTable FROM saving" , null);
+	  Cursor c = db.rawQuery("SELECT selectedTable, acquisition FROM saving" , null);
 	  return c;
   }
   
-  public void saveStateInDatabase(String value){
+  public void saveStateInDatabase(String value, boolean acquisition){
 	  discardSaving();
 	  
 	  List<String> attributesToSave = new ArrayList<String>();
 	  attributesToSave.add("selectedTable");
+	  attributesToSave.add("acquisition");
 	  createNewTable("saving", attributesToSave);
 	  
-	  insertSavePoint("saving", value);
+	  insertSavePoint("saving", value, acquisition);
   }
   
-  private void insertSavePoint(String table, String value) {
+  private void insertSavePoint(String table, String value, boolean acquisition) {
 	  long rowId = -1;
 	  
 	  try{
@@ -121,6 +122,7 @@ public class DBConnection extends SQLiteOpenHelper{
 	  
 	  ContentValues values = new ContentValues();
 	  values.put("selectedTable", value);
+	  values.put("acquisition", String.valueOf(acquisition));
 	  
 	  rowId = db.insert(table, null, values);
 	  }catch (SQLException se){

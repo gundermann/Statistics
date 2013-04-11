@@ -2,7 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.statistics.timestatistics"
     android:versionCode="1"
-    android:versionName="1.0" >
+    android:versionName="1.0" 
+    >
 
     <uses-sdk
         android:minSdkVersion="8"
@@ -27,13 +28,16 @@
             
         </activity>
     	<activity 
-            android:name="com.statistics.timestatistics.FormularForSettingUpNewStatistic"    />	    
+            android:name="com.statistics.timestatistics.FormularForSettingUpNewStatistic"  
+            android:configChanges="orientation"  />	    
     	<activity 
             android:name="com.statistics.timestatistics.ListOfexistingStatistics"    	    />
     	<activity 
-            android:name="com.statistics.timestatistics.Acquisition"    	    />
+            android:name="com.statistics.timestatistics.Acquisition"    	 
+            android:configChanges="orientation"   />
     	<activity 
-            android:name="com.statistics.timestatistics.SelectedStatisticView"    	    />
+            android:name="com.statistics.timestatistics.SelectedStatisticView"    	
+            android:configChanges="orientation"    />
     </application>
 
 </manifest>

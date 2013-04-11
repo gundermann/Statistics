@@ -46,7 +46,7 @@ public class ListOfexistingStatistics extends Activity {
 			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
 					long arg3) {
 				String tableName = existingStats.getItemAtPosition(arg2).toString()+String.valueOf(arg2+1);
-				dbc.saveStateInDatabase(tableName);
+				dbc.saveStateInDatabase(tableName, false);
 				dbc.close();
 				
 				Intent in = new Intent(ListOfexistingStatistics.this, SelectedStatisticView.class);
