@@ -134,6 +134,8 @@ public class SelectedStatisticView extends Acquisition {
 	@Override
 	public void onConfigurationChanged(Configuration newConfig){
 		super.onConfigurationChanged(newConfig);
+		if(!isAcquisition())
+			updateLayout(this.getCurrentFocus());
 	}
 	
 	private ImageButton getBtPrev(){

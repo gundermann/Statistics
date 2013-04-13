@@ -7,16 +7,16 @@ import com.common.StringModifier;
 import com.statistics.timestatistics.dbcontroller.DBConnection;
 
 import android.app.Activity;
-import android.content.Intent;
+import android.app.AlertDialog;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.database.Cursor;
-import android.database.CursorJoiner.Result;
 import android.database.sqlite.SQLiteException;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.util.DisplayMetrics;
 import android.view.Display;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
@@ -31,25 +31,37 @@ public class Acquisition extends Activity{
 	
 	Chronometer clock;
 	String time = null;
+	boolean reset = true;
 	int counter;
+	private AlertDialog dialog = null;
+	private boolean round = true;
+	private boolean dirty = false;
 	
-	@SuppressWarnings("deprecation")
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		if(isAcquisition()){
 			setAcquisition();
 		}
 	}
+	@SuppressWarnings("deprecation")
 	public void setAcquisition(){
 		setContentView(R.layout.acquisition);
+		clock = (Chronometer) findViewById(R.id.clock);
 		
 		if(loadTime() != 0L){
-			clock.setBase(loadTime());
+			clock.setBase(SystemClock.elapsedRealtime()-loadTime());
+			clock.start();
+			clock.stop();
+			loadValues();
+			reset = false;
 			setClockStarted(wasClockStarted());
+		}
+		else{
+//			clock.setBase(SystemClock.elapsedRealtime());
 		}
 		
 		updateLayout(this.getCurrentFocus());
-		final String currentStatistic = StringModifier.deleteSpaces(loadSelectedTable());
+		final String currentStatistic = getCurrentTable();
 		List<String> attributes = loadAttributes(currentStatistic);
 		prepareLayout(attributes);
 		
@@ -71,15 +83,14 @@ public class Acquisition extends Activity{
 			
 			@Override
 			public void onClick(View arg0) {
-				clock = (Chronometer) findViewById(R.id.clock);
-				
 				if ( isClockStarted() ){
 					setClockStarted(false);
 					time = clock.getText().toString();
 				}
 				else{
-					clock.setBase(SystemClock.elapsedRealtime());
+//					clock.setBase(SystemClock.elapsedRealtime());
 					setClockStarted(true);
+					saveTimeAndValues();
 				}
 
 			}
@@ -99,22 +110,35 @@ public class Acquisition extends Activity{
 
 				DBConnection db = new DBConnection(getApplicationContext());
 				
-				List<String> valuesToSave = new ArrayList<String>();
-				LinearLayout linLay = (LinearLayout) findViewById(R.id.acquisitionLayout);
-				for(int i = 0; i < linLay.getChildCount(); i++){
-					if( linLay.getChildAt(i) instanceof EditText){
-						valuesToSave.add(((EditText) linLay.getChildAt(i)).getText().toString());
-					}
-				}
 				
-				db.insertValueIntoStatistic(currentStatistic, valuesToSave, clock.getText().toString());
+				db.insertValueIntoStatistic(currentStatistic, getValuesToSave(), clock.getText().toString());
 				db.close();
 
-				clock.setBase(SystemClock.elapsedRealtime());
+//				clock.setBase(SystemClock.elapsedRealtime());
+				reset = true;
 				clock.setText("00:00");
 				clearAllElements();
 			}
 		});
+	}
+	
+	protected void setDialog(AlertDialog alertDialog) {
+		dialog  = alertDialog;
+	}
+	
+	private String getCurrentTable() {
+		return StringModifier.deleteSpaces(loadSelectedTable());
+	}
+	public List<String> getValuesToSave(){
+		List<String> valuesToSave = new ArrayList<String>();
+		LinearLayout linLay = (LinearLayout) findViewById(R.id.acquisitionLayout);
+		for(int i = 0; i < linLay.getChildCount(); i++){
+			if( linLay.getChildAt(i) instanceof EditText){
+				valuesToSave.add(((EditText) linLay.getChildAt(i)).getText().toString());
+			}
+		}
+
+		return valuesToSave;
 	}
 	
 	public Button getBtClock(){
@@ -123,8 +147,13 @@ public class Acquisition extends Activity{
 	
 	private void setClockStarted(boolean started) {
 		if(started){
+			clock.setBase(SystemClock.elapsedRealtime());
+			if(reset || !round )
+				clock.setBase(SystemClock.elapsedRealtime()-loadTime());
 			clock.start();
 			getBtClock().setText("Stop");
+			reset = false;
+			dirty = true;
 		}
 		else{
 			clock.stop();
@@ -134,10 +163,14 @@ public class Acquisition extends Activity{
 	
 	@Override
 	public void onBackPressed(){
+		if ( dialog != null){
+			dialog.cancel();
+		}else{
 		DBConnection dbc = new DBConnection(getApplicationContext());
 		dbc.discardSaving();
 		dbc.close();
 		System.exit(0);
+		}
 	} 
 
 	protected boolean isAcquisition() {
@@ -147,6 +180,7 @@ public class Acquisition extends Activity{
 		result.moveToFirst();
 		boolean isAcquisition = Boolean.parseBoolean(result.getString(1));
 		
+		result.close();
 		db.close();
 		return isAcquisition;
 		}
@@ -174,30 +208,51 @@ public class Acquisition extends Activity{
 		
 	}
 	
-	private void saveTime(){
+	private void saveTimeAndValues(){
+		if (dirty ){
 		List<String> attributes = new ArrayList<String>();
+		attributes.addAll(loadAttributes(getCurrentTable()));
 		attributes.add("started");
 		
+		
 		List<String> values = new ArrayList<String>();
+		values.addAll(getValuesToSave());
 		values.add(String.valueOf(isClockStarted()));
 		
-		DBConnection dbc = new DBConnection(getApplicationContext());
-		dbc.createNewTable("timesaving789", attributes);
-		dbc.insertValueIntoStatistic("timesaving789", values, String.valueOf(clock.getBase()));
-		dbc.close();
-	}
-	
-	private long loadTime(){
-		DBConnection dbc = new DBConnection(getApplicationContext());
+		DBConnection dbc = new DBConnection(this.getApplicationContext());
 		try{
-		Cursor result = dbc.getReadableDatabase().rawQuery("select * from timesaving789", null);
-		result.moveToFirst();
-		return Long.parseLong(result.getString(2));
+			dbc.getWritableDatabase().execSQL("drop table timesaving789");
 		}
 		catch(SQLiteException sqle){
-			return 0L;
+			System.out.println("Table doesn't exists");
+			
 		}
+		dbc.createNewTable("timesaving789", attributes);
+		dbc.close();
+		dbc = new DBConnection(this.getApplicationContext());
+		dbc.insertValueIntoStatistic("timesaving789", values, String.valueOf(clock.getBase()));
+		dbc.close();
+		}
+	}
+	
+	
+	
+	private void loadValues(){
+		DBConnection db = new DBConnection(this.getApplicationContext());
+		Cursor result = db.getReadableDatabase().rawQuery("select * from timesaving789", null);
 		
+		result.moveToFirst();
+		if ( result.getColumnCount() < 2){
+		LinearLayout linLay = (LinearLayout) findViewById(R.id.acquisitionLayout);
+
+		int elementIndex = 3;
+		for(int i = 1; i < result.getColumnCount()-1; i++){
+			((EditText) linLay.getChildAt(elementIndex)).setText(result.getString(i));
+			elementIndex = elementIndex + 2;
+		}
+		}
+		result.close();
+		db.close();
 	}
 	
 	private boolean wasClockStarted(){
@@ -207,6 +262,7 @@ public class Acquisition extends Activity{
 		result.moveToFirst();
 		boolean wasStarted = Boolean.parseBoolean(result.getString(1));
 		
+		result.close();
 		dbc.getWritableDatabase().execSQL("DROP TABLE IF EXISTS timesaving789");
 		dbc.close();
 		
@@ -215,9 +271,13 @@ public class Acquisition extends Activity{
 	
 	@Override
 	public void onConfigurationChanged(Configuration newConfig) {
-		saveTime();
+		if( isAcquisition() )
+			saveTimeAndValues();
+		
 		super.onConfigurationChanged(newConfig);
-		setAcquisition();
+		
+		if( isAcquisition() )
+			setAcquisition();
 	}
 	
 	private void prepareLayout(List<String> attributes) {
@@ -255,6 +315,7 @@ public class Acquisition extends Activity{
 			list.add(result.getColumnName(i).toString());
 		}
 	
+		result.close();
 		db.close();
 		return list;
 	}
@@ -272,6 +333,7 @@ public class Acquisition extends Activity{
 		result.moveToFirst();
 		String currentStatistic = result.getString(0);
 		
+		result.close();
 		db.close();
 		return currentStatistic;
 	}

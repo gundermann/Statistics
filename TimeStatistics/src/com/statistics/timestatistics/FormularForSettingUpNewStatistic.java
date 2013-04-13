@@ -29,6 +29,7 @@ public class FormularForSettingUpNewStatistic extends Acquisition{
 	private List<String> attributes = new ArrayList<String>();
 	private static int DIALOG_TITLE = 1;
 	
+	
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		if(!isAcquisition()){
@@ -112,7 +113,7 @@ public class FormularForSettingUpNewStatistic extends Acquisition{
 			  });
 
 		AlertDialog alertDialog = alertDialogBuilder.create();
-
+		setDialog(alertDialog);
 		alertDialog.show();		
 	}
 
@@ -150,6 +151,8 @@ public class FormularForSettingUpNewStatistic extends Acquisition{
 //		alertDialog.show();		
 //	}
 	
+	
+
 	private void addNewAttribute(String name) {
 //		attributes.put(name, type.toString());
 		if ( !name.equals(""))
