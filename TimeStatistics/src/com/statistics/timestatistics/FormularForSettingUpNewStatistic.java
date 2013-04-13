@@ -6,11 +6,8 @@ import java.util.List;
 import com.common.StringModifier;
 import com.statistics.timestatistics.dbcontroller.DBConnection;
 
-import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.Dialog;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.content.res.Configuration;
 import android.database.Cursor;
 import android.os.Bundle;
@@ -19,8 +16,6 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
-import android.widget.TextView;
 
 public class FormularForSettingUpNewStatistic extends Acquisition{
 	
@@ -30,6 +25,7 @@ public class FormularForSettingUpNewStatistic extends Acquisition{
 	private static int DIALOG_TITLE = 1;
 	
 	
+	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		if(!isAcquisition()){
@@ -106,7 +102,8 @@ public class FormularForSettingUpNewStatistic extends Acquisition{
 
 		alertDialogBuilder.setCancelable(false).setPositiveButton("OK",
 				new DialogInterface.OnClickListener() {
-			    public void onClick(DialogInterface dialog,int id) {
+			    @Override
+				public void onClick(DialogInterface dialog,int id) {
 			    	dialog.cancel();
 			    }
 

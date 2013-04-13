@@ -1,13 +1,10 @@
 package com.statistics.timestatistics;
 
-import com.statistics.timestatistics.dbcontroller.DBConnection;
-
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Display;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.LinearLayout.LayoutParams;
@@ -50,7 +47,7 @@ public class MainMenue extends Activity {
 		Button btShow = (Button) findViewById(R.id.btshowstats);
 		Display display = getWindowManager().getDefaultDisplay();
     	
-		LayoutParams params = new LayoutParams(LayoutParams.MATCH_PARENT, (LayoutParams.WRAP_CONTENT));
+		LayoutParams params = new LayoutParams(android.view.ViewGroup.LayoutParams.MATCH_PARENT, (android.view.ViewGroup.LayoutParams.WRAP_CONTENT));
 		params.setMargins(display.getWidth()/10, (display.getHeight()/5), display.getWidth()/10, 0);
 		
 		btNew.setLayoutParams(params);

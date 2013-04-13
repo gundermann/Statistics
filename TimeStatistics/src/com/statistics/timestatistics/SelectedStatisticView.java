@@ -6,8 +6,6 @@ import java.util.List;
 import com.common.StringModifier;
 import com.statistics.timestatistics.dbcontroller.DBConnection;
 
-import android.app.Activity;
-import android.content.Intent;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.database.Cursor;
@@ -30,6 +28,7 @@ public class SelectedStatisticView extends Acquisition {
 	
 	int counter = 0;
  
+	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		if(!isAcquisition()){
@@ -94,7 +93,7 @@ public class SelectedStatisticView extends Acquisition {
 		if( result.getCount() == 0){
 			TextView tvNoValues = new TextView(getApplicationContext());
 			tvNoValues.setText("No Values");
-			LayoutParams lp = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
+			LayoutParams lp = new LayoutParams(android.view.ViewGroup.LayoutParams.MATCH_PARENT, android.view.ViewGroup.LayoutParams.WRAP_CONTENT);
 			tvNoValues.setLayoutParams(lp);
 			tvNoValues.setGravity(Gravity.CENTER);
 		}
@@ -154,7 +153,7 @@ public class SelectedStatisticView extends Acquisition {
 		LinearLayout linLay = (LinearLayout) findViewById(R.id.tableViewSpecificAttributes);
 		
 		for(String attribute : attributes){
-			LayoutParams layPara = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
+			LayoutParams layPara = new LayoutParams(android.view.ViewGroup.LayoutParams.MATCH_PARENT, android.view.ViewGroup.LayoutParams.WRAP_CONTENT);
 			TextView tv = new TextView(getApplicationContext());
 			tv.setText(attribute + ":");
 			tv.setTextColor(R.color.text);
@@ -168,10 +167,10 @@ public class SelectedStatisticView extends Acquisition {
 			linLay.addView(et);
 		}
 		
-		LayoutParams layPara = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
+		LayoutParams layPara = new LayoutParams(android.view.ViewGroup.LayoutParams.MATCH_PARENT, android.view.ViewGroup.LayoutParams.MATCH_PARENT);
 		linLay.setLayoutParams(layPara);
 		
-		layPara = new LayoutParams(getWindowManager().getDefaultDisplay().getWidth()/2, LayoutParams.WRAP_CONTENT);
+		layPara = new LayoutParams(getWindowManager().getDefaultDisplay().getWidth()/2, android.view.ViewGroup.LayoutParams.WRAP_CONTENT);
 		getBtPrev().setLayoutParams(layPara);
 		getBtNext().setLayoutParams(layPara);
 	}
@@ -209,7 +208,7 @@ public class SelectedStatisticView extends Acquisition {
 		
 		ImageButton btPrev = (ImageButton) findViewById(R.id.btPrevValue);
 		ImageButton btNext = (ImageButton) findViewById(R.id.btNextValue);
-		LayoutParams lp = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+		LayoutParams lp = new LayoutParams(android.view.ViewGroup.LayoutParams.WRAP_CONTENT, android.view.ViewGroup.LayoutParams.WRAP_CONTENT);
 
     	Resources resources = getApplicationContext().getResources();
     	Display display = getWindowManager().getDefaultDisplay();

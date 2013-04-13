@@ -37,6 +37,7 @@ public class Acquisition extends Activity{
 	private boolean round = true;
 	private boolean dirty = false;
 	
+	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		if(isAcquisition()){
@@ -68,7 +69,7 @@ public class Acquisition extends Activity{
 		Display display = getWindowManager().getDefaultDisplay();
 		
 		ImageButton btClear = (ImageButton) findViewById(R.id.btClearFormular);
-		btClear.setLayoutParams(new LinearLayout.LayoutParams(display.getWidth()/2, LayoutParams.WRAP_CONTENT));
+		btClear.setLayoutParams(new LinearLayout.LayoutParams(display.getWidth()/2, android.view.ViewGroup.LayoutParams.WRAP_CONTENT));
 		btClear.setOnClickListener(new AdapterView.OnClickListener() {
 			
 			@Override
@@ -99,7 +100,7 @@ public class Acquisition extends Activity{
 		
 		
 		ImageButton btApply = (ImageButton) findViewById(R.id.btApplyNewValue);
-		btApply.setLayoutParams(new LinearLayout.LayoutParams(display.getWidth()/2, LayoutParams.WRAP_CONTENT));
+		btApply.setLayoutParams(new LinearLayout.LayoutParams(display.getWidth()/2, android.view.ViewGroup.LayoutParams.WRAP_CONTENT));
 		btApply.setOnClickListener(new AdapterView.OnClickListener() {
 			
 			@Override
@@ -284,7 +285,7 @@ public class Acquisition extends Activity{
 		LinearLayout linLay = (LinearLayout) findViewById(R.id.acquisitionLayout);
 		
 		for(String attribute : attributes){
-			android.widget.FrameLayout.LayoutParams layPara = new android.widget.FrameLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
+			android.widget.FrameLayout.LayoutParams layPara = new android.widget.FrameLayout.LayoutParams(android.view.ViewGroup.LayoutParams.MATCH_PARENT, android.view.ViewGroup.LayoutParams.WRAP_CONTENT);
 			TextView tv = new TextView(getApplicationContext());
 			tv.setText(attribute + ":");
 			tv.setTextColor(R.color.text);
@@ -297,7 +298,7 @@ public class Acquisition extends Activity{
 			linLay.addView(et);
 		}
 		
-		android.widget.FrameLayout.LayoutParams layPara = new android.widget.FrameLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
+		android.widget.FrameLayout.LayoutParams layPara = new android.widget.FrameLayout.LayoutParams(android.view.ViewGroup.LayoutParams.MATCH_PARENT, android.view.ViewGroup.LayoutParams.MATCH_PARENT);
 		linLay.setLayoutParams(layPara);
 	}
 
@@ -345,7 +346,7 @@ public class Acquisition extends Activity{
 		
 		ImageButton btApply = (ImageButton) findViewById(R.id.btApplyNewValue);
 		ImageButton btClear = (ImageButton) findViewById(R.id.btClearFormular);
-		LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+		LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(android.view.ViewGroup.LayoutParams.WRAP_CONTENT, android.view.ViewGroup.LayoutParams.WRAP_CONTENT);
 
     	Resources resources = getApplicationContext().getResources();
     	Display display = getWindowManager().getDefaultDisplay();
