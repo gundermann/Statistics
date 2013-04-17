@@ -109,9 +109,8 @@ public class FormularForSettingUpNewStatistic extends Acquisition{
 
 			  });
 
-		AlertDialog alertDialog = alertDialogBuilder.create();
-		setDialog(alertDialog);
-		alertDialog.show();		
+		setDialog(alertDialogBuilder.create());
+		dialog.show();		
 	}
 
 	//	private void openDialogForNewAttritubte() {
