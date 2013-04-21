@@ -43,6 +43,9 @@ public class FormularForSettingUpNewStatistic extends Acquisition{
 //			}
 //		});
 		
+		
+		//needs a evaluation of the attributes
+		//don't use numbers for attributes
 		Button btApplyNewStatistic = (Button) findViewById(R.id.btApplyNewStatistic);
 		btApplyNewStatistic.setOnClickListener(new OnClickListener() {
 			@Override

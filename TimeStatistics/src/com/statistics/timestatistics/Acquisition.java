@@ -4,13 +4,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.common.StringModifier;
+import com.statistics.timestatistics.business.Statistic;
 import com.statistics.timestatistics.business.StatisticClock;
 import com.statistics.timestatistics.dbcontroller.DBConnection;
+import com.statistics.timestatistics.dbcontroller.PersistensStatisticHandler;
 import com.statistics.timestatistics.dbcontroller.PersistensTimeHandler;
 import com.statistics.timestatistics.definition.NoClockStateException;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.res.Configuration;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteException;
@@ -25,6 +28,7 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class Acquisition extends Activity{
 	
@@ -34,6 +38,7 @@ public class Acquisition extends Activity{
 	int counter;
 	protected AlertDialog dialog = null;
 	private String savingTable = "timesaving789";
+	protected Statistic statistic;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -47,11 +52,14 @@ public class Acquisition extends Activity{
 		clock = new StatisticClock((Chronometer) findViewById(R.id.clock));
 		
 		updateLayout(this.getCurrentFocus());
+
+		loadStaistic();
 		
 		final String currentStatistic = getCurrentTable();
-		List<String> attributes = loadAttributes(currentStatistic);
+		List<String> attributes = statistic.getAttributes();
 		prepareLayout(attributes);
 
+		
 		updateClock();
 		
 		getBtClear().setOnClickListener(new AdapterView.OnClickListener() {
@@ -93,18 +101,33 @@ public class Acquisition extends Activity{
 			public void onClick(View arg0) {
 
 				DBConnection db = new DBConnection(getApplicationContext());
-				
-				
-				db.insertValueIntoStatistic(currentStatistic, getValuesToSave(), clock.getTime().toString());
+				final PersistensStatisticHandler psh = new PersistensStatisticHandler(db, loadSelectedTable());
+				statistic.addValue(getValuesToSave(), clock.getTime());
+				psh.saveStatistic(statistic);
+			
+//				db.insertValueIntoStatistic(currentStatistic, getValuesToSave(), clock.getTime().toString());
 				db.close();
 
 				clock.handleStopped();
 				clearAllElements();
+				
+				Context context = getApplicationContext();
+				CharSequence text = "Value saved";
+				int duration = Toast.LENGTH_SHORT;
+
+				Toast toast = Toast.makeText(context, text, duration);
+				toast.show();
 			}
 		});
 	}
 	
-	private void updateClock() {
+	protected void loadStaistic() {
+		DBConnection db = new DBConnection(getApplicationContext());
+		final PersistensStatisticHandler psh = new PersistensStatisticHandler(db, loadSelectedTable());
+		this.statistic = psh.loadStatistic();
+	}
+	
+	protected void updateClock() {
 		DBConnection dbc = new DBConnection(getApplicationContext());
 		PersistensTimeHandler pth = new PersistensTimeHandler(dbc, getSavingTable());
 		clock.updateClock(pth.getSavedTime(), pth.getSettedStateOfClock());

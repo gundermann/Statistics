@@ -152,7 +152,6 @@ public void discardSaving(){
 		  DATABASE_CREATE.append(", ");
 		  DATABASE_CREATE.append(attribute);
 		  DATABASE_CREATE.append(" Text");
-//		  DATABASE_CREATE.append(attributes.get(attribute).toString());
 	  }
 	  
 	  DATABASE_CREATE.append(", time Text);");

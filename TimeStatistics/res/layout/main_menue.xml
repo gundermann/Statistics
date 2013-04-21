@@ -11,9 +11,11 @@
         android:layout_height="wrap_content"
         android:text="@string/newstat"
         android:gravity="center"
-        android:background="@color/text"
+        android:background="@drawable/blue_btn"
         android:textColor="@color/white"
         android:textSize="40sp"
+        style="@style/ButtonText"
+        
         />
     
      <Button 
@@ -22,9 +24,10 @@
         android:layout_height="wrap_content"
         android:text="@string/show"
         android:gravity="center"
-        android:background="@color/text"
+        android:background="@drawable/blue_btn"
         android:textColor="@color/white"
-        android:textSize="40sp"/>
+        android:textSize="40sp"
+        style="@style/ButtonText"/>
     
 
 </LinearLayout>

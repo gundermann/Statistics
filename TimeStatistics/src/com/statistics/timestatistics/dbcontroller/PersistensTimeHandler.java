@@ -46,7 +46,7 @@ public class PersistensTimeHandler {
 			Cursor result = dbc.getReadableDatabase().rawQuery("select * from timesaving789", null);
 			result.moveToFirst();
 			try{
-				//Find the state one column befor the last
+				//Find the state one column before the last
 				state = new ClockState(result.getString(result.getColumnCount()-2));
 			}catch(NoClockStateException ncse){
 				state = new ClockState(Integer.parseInt(result.getString(result.getColumnCount()-2)));
@@ -57,9 +57,6 @@ public class PersistensTimeHandler {
 		catch(SQLiteException sqle){
 			return new ClockState(0);
 		}
-		
-//		dbc.getWritableDatabase().execSQL("DROP TABLE IF EXISTS timesaving789");
-		
 		return state;
 	}
 	

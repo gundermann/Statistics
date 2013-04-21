@@ -4,7 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.common.StringModifier;
+import com.statistics.timestatistics.business.StatisticClock;
 import com.statistics.timestatistics.dbcontroller.DBConnection;
+import com.statistics.timestatistics.dbcontroller.PersistensStatisticHandler;
 
 import android.content.res.Configuration;
 import android.content.res.Resources;
@@ -36,24 +38,18 @@ public class SelectedStatisticView extends Acquisition {
 		updateLayout(this.getCurrentFocus());
 		
 		final String currentStatistic = StringModifier.deleteSpaces(loadSelectedTable());
-		List<String> attributes = loadAttributes(currentStatistic);
-		prepareLayout(attributes);
 		
+		loadStaistic();
+		prepareLayout(statistic.getAttributes());
 		
-		StringBuilder sql = new StringBuilder();
-		sql.append("select * from " + currentStatistic);
-		
-		DBConnection db = new DBConnection(getApplicationContext());
-		final Cursor result = db.getReadableDatabase().rawQuery(sql.toString(), null);
-		
-		updateElements(result);
+		updateElements();
 		
 		getBtPrev().setOnClickListener(new AdapterView.OnClickListener() {
 			
 			@Override
 			public void onClick(View v) {
 				counter--;
-				updateElements(result);
+				updateElements();
 			}
 		});
 		
@@ -62,7 +58,7 @@ public class SelectedStatisticView extends Acquisition {
 			@Override
 			public void onClick(View v) {
 				counter++;
-				updateElements(result);
+				updateElements();
 			}
 		});
 		
@@ -73,24 +69,18 @@ public class SelectedStatisticView extends Acquisition {
 				DBConnection dbc = new DBConnection(getApplicationContext());
 				dbc.saveStateInDatabase(currentStatistic, true);
 				dbc.close();
-//				Intent in = new Intent(SelectedStatisticView.this, Acquisition.class);
-//		        startActivity(in);
-//		        closeContextMenu();
 				setAcquisition();
 			}
 		});
 		
-		db.close();
 		}
 	}
 	
 
-	private void updateElements(Cursor result){
-		result.moveToPosition(counter);
-		
+	private void updateElements(){
 		LinearLayout linLay = (LinearLayout) findViewById(R.id.tableViewSpecificAttributes);
-
-		if( result.getCount() == 0){
+		
+		if( statistic.isEmpty()){
 			TextView tvNoValues = new TextView(getApplicationContext());
 			tvNoValues.setText("No Values");
 			LayoutParams lp = new LayoutParams(android.view.ViewGroup.LayoutParams.MATCH_PARENT, android.view.ViewGroup.LayoutParams.WRAP_CONTENT);
@@ -99,12 +89,13 @@ public class SelectedStatisticView extends Acquisition {
 		}
 		else{
 		int elementIndex = 1;
-		for(int i = 1; i < result.getColumnCount()-1; i++){
-			((EditText) linLay.getChildAt(elementIndex)).setText(result.getString(i));
+		for(int i = 1; i < statistic.getAttributeCount()-1; i++){
+			((EditText) linLay.getChildAt(elementIndex)).setText(statistic.getValueAt(counter, i));
 		}
 		
-		Chronometer clock = (Chronometer) findViewById(R.id.clockValue);
-		clock.setText(result.getString(result.getColumnCount()-1));
+		clock = new StatisticClock((Chronometer) findViewById(R.id.clockValue));
+		updateClock();
+		clock.showTime();
 		
 		}
 		
@@ -113,7 +104,7 @@ public class SelectedStatisticView extends Acquisition {
 			getBtNext().setEnabled(true);
 		}
 		
-		else if ( counter == result.getCount()-1){
+		else if ( counter == statistic.getValueCount()-1){
 			getBtNext().setEnabled(false);
 			getBtPrev().setEnabled(true);
 		}
@@ -123,7 +114,7 @@ public class SelectedStatisticView extends Acquisition {
 		}
 		
 		
-		if( result.getCount() == 0 || result.getCount() == 1 ){
+		if( statistic.getValueCount() == 0 || statistic.getValueCount() == 1 ){
 			getBtNext().setEnabled(false);
 			getBtPrev().setEnabled(false);
 		}
