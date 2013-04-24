@@ -8,8 +8,8 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textColor="#2E64FE"
-        android:textColorHint="#2E64EE"
+        android:textColor="#449def"
+        android:textColorHint="#2f6699"
         android:textSize="20sp"
        	android:textScaleX="2"
        	android:textStyle="bold"
@@ -19,11 +19,12 @@
     <TextView 
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textColor="#2E64FE"
-        android:textColorHint="#2E64EE"
+        android:textColor="#449def"
+        android:textColorHint="#2f6699"
         android:textSize="12sp"
        	android:textScaleX="2"
        	android:gravity="center"
         android:text="@string/closeApp"
+        
         />
 </LinearLayout>

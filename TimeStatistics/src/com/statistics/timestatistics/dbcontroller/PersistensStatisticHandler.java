@@ -9,7 +9,11 @@ import com.common.StringModifier;
 import com.statistics.timestatistics.business.Statistic;
 
 import android.annotation.SuppressLint;
+import android.content.ContentValues;
 import android.database.Cursor;
+import android.database.SQLException;
+import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
 public class PersistensStatisticHandler {
 
@@ -32,24 +36,32 @@ public class PersistensStatisticHandler {
 	 * @param statistic
 	 */
 	public void saveStatistic(Statistic statistic){
-		dbc.getWritableDatabase().execSQL("drop table " + StringModifier.deleteSpaces(statistic.getName()));
+		dbc.getWritableDatabase().execSQL("DROP TABLE IF EXISTS " + StringModifier.deleteSpaces(statistic.getName()));
 		
 		createNewTableForStatistics(statistic);
 		
-		for(int line = 0; line < statistic.getValueCount(); line++){
-		sql = new StringBuilder();
-		sql.append("insert into ");
-		sql.append(StringModifier.deleteSpaces(statistic.getName()));
-		sql.append(" values (");
-		sql.append(statistic.getValueAt(line, 0));
-		for(int attribute=1; attribute < statistic.getAttributeCount(); attribute++){
-			sql.append(", ");
-			sql.append(statistic.getValueAt(line, attribute));
-		}
+		for(int line = 1; line <= statistic.getValueCount(); line++){
+		 long rowId = -1;
 
-		sql.append(")");
+		 Cursor result = dbc.getReadableDatabase().rawQuery("select * from "+(StringModifier.deleteSpaces(statistic.getName())), null); 
+		 
+		  try{
+		  SQLiteDatabase db = dbc.getWritableDatabase();
+		  
+		  ContentValues values = new ContentValues();
+		  int counter = 1;
+		  for(String value : statistic.getValues(line)){
+			  values.put(result.getColumnName(counter), value);
+			  counter++;
+		  }
+		  
+		  rowId = db.insert((StringModifier.deleteSpaces(statistic.getName())), null, values);
+		  }catch (SQLException se){
+			  Log.e(DBConnection.class.getSimpleName(), "insert()", se);
+		  }finally{
+			  Log.d(DBConnection.class.getSimpleName(), "insert(): rowID=" +rowId);
+		  }
 		
-		dbc.getWritableDatabase().execSQL(sql.toString());
 		}
 	}
 	
@@ -58,8 +70,7 @@ public class PersistensStatisticHandler {
 	 * @param statistic
 	 */
 	private void createNewTableForStatistics(Statistic statistic) {
-
-		dbc.createNewTable(StringModifier.deleteSpaces(statistic.getName()), statistic.getAttributesWithoutIdAndTime());
+//		dbc.createNewTable(StringModifier.deleteSpaces(statistic.getName()), statistic.getAttributesWithoutIdAndTime());
 		sql = new StringBuilder();
 		  
 		sql.append("create table "
@@ -85,7 +96,7 @@ public class PersistensStatisticHandler {
 		List<String> attributes = new ArrayList<String>();
 		Map<Integer, List<String>> values = new HashMap<Integer, List<String>>();
 		
-		sql.delete(0, sql.length()-1);
+		sql = new StringBuilder();
 		sql.append("select * from ");
 		sql.append(StringModifier.deleteSpaces(name));
 		

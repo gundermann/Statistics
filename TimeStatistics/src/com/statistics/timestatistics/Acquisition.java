@@ -5,7 +5,7 @@ import java.util.List;
 
 import com.common.StringModifier;
 import com.statistics.timestatistics.business.Statistic;
-import com.statistics.timestatistics.business.StatisticClock;
+import com.statistics.timestatistics.business.ResetableStopwatch;
 import com.statistics.timestatistics.dbcontroller.DBConnection;
 import com.statistics.timestatistics.dbcontroller.PersistensStatisticHandler;
 import com.statistics.timestatistics.dbcontroller.PersistensTimeHandler;
@@ -32,7 +32,7 @@ import android.widget.Toast;
 
 public class Acquisition extends Activity{
 	
-	StatisticClock clock;
+	ResetableStopwatch clock;
 	String time = null;
 	boolean reset = true;
 	int counter;
@@ -49,44 +49,44 @@ public class Acquisition extends Activity{
 	}
 	public void setAcquisition(){
 		setContentView(R.layout.acquisition);
-		clock = new StatisticClock((Chronometer) findViewById(R.id.clock));
+		clock = new ResetableStopwatch((Chronometer) findViewById(R.id.clock));
 		
 		updateLayout(this.getCurrentFocus());
 
 		loadStaistic();
 		
-		final String currentStatistic = getCurrentTable();
-		List<String> attributes = statistic.getAttributes();
+		List<String> attributes = statistic.getAttributesWithoutIdAndTime();
 		prepareLayout(attributes);
-
 		
 		updateClock();
 		
+		
+		/**
+		 * Clears all Attributevalues and resets clock
+		 */
 		getBtClear().setOnClickListener(new AdapterView.OnClickListener() {
 			
 			@Override
 			public void onClick(View arg0) {
 				clearAllElements();
+				resetClock();
 			}
 
 		});
 		
+		/**
+		 * Stops the clock
+		 */
 		getBtClockStartStop().setOnClickListener(new AdapterView.OnClickListener() {
 			
 			@Override
 			public void onClick(View arg0) {
 				switch (clock.getState().getStateNumber()) {
 				case 1:
-					clock.handleStopped();
-					getBtClockStartStop().setText("Start");
+					stopClock();
 					break;
 				default:
-					try {
-						clock.handleStart(clock.getState());
-						getBtClockStartStop().setText("Stop");
-					} catch (NoClockStateException e) {
-						e.printStackTrace();
-					}
+					startClock();
 					break;
 				}
 
@@ -94,7 +94,9 @@ public class Acquisition extends Activity{
 
 		});
 		
-		
+		/**
+		 * Applys the current time and values for current statistic
+		 */
 		getBtApply().setOnClickListener(new AdapterView.OnClickListener() {
 			
 			@Override
@@ -104,11 +106,10 @@ public class Acquisition extends Activity{
 				final PersistensStatisticHandler psh = new PersistensStatisticHandler(db, loadSelectedTable());
 				statistic.addValue(getValuesToSave(), clock.getTime());
 				psh.saveStatistic(statistic);
-			
-//				db.insertValueIntoStatistic(currentStatistic, getValuesToSave(), clock.getTime().toString());
 				db.close();
 
-				clock.handleStopped();
+				resetClock();
+				
 				clearAllElements();
 				
 				Context context = getApplicationContext();
@@ -118,13 +119,34 @@ public class Acquisition extends Activity{
 				Toast toast = Toast.makeText(context, text, duration);
 				toast.show();
 			}
+
 		});
+	}
+
+	private void stopClock() {
+		clock.handleStopped();
+		getBtClockStartStop().setText("Start");
+	}
+	
+	private void resetClock() {
+		clock.handleReset();
+		getBtClockStartStop().setText("Start");		
+	}
+	
+	private void startClock() {
+		try {
+			clock.handleStart(clock.getState());
+			getBtClockStartStop().setText("Stop");	
+		} catch (NoClockStateException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	protected void loadStaistic() {
 		DBConnection db = new DBConnection(getApplicationContext());
 		final PersistensStatisticHandler psh = new PersistensStatisticHandler(db, loadSelectedTable());
 		this.statistic = psh.loadStatistic();
+		db.close();
 	}
 	
 	protected void updateClock() {
@@ -178,7 +200,7 @@ public class Acquisition extends Activity{
 		return valuesToSave;
 	}
 	
-	public Button getBtClockStartStop(){
+	private Button getBtClockStartStop(){
 		return (Button) findViewById(R.id.clockButton);
 	}
 	
@@ -202,6 +224,7 @@ public class Acquisition extends Activity{
 	public void onBackPressed(){
 		if ( dialog != null){
 			dialog.cancel();
+			dialog = null;
 		}else{
 		DBConnection dbc = new DBConnection(getApplicationContext());
 		dbc.discardSaving();
@@ -249,6 +272,7 @@ public class Acquisition extends Activity{
 		
 	}
 	
+	@SuppressWarnings("deprecation")
 	private void saveTimeAndValues(){
 		List<String> attributes = new ArrayList<String>();
 		attributes.addAll(loadAttributes(getCurrentTable()));
@@ -286,12 +310,9 @@ public class Acquisition extends Activity{
 		
 		if( isAcquisition() ){
 			setAcquisition();
-			handleClock();
 		}
 	}
 	
-	private void handleClock() {
-	}
 	/**
 	 * prepares the layout for the acquisition of new values for current statistic
 	 * creates for every attribute a textview and an edittext
@@ -354,20 +375,13 @@ public class Acquisition extends Activity{
 	}
 
 	
-	@SuppressWarnings("deprecation")
 	private void updateLayout(View view) {
-		
-		
-		ImageButton btApply = (ImageButton) findViewById(R.id.btApplyNewValue);
-		ImageButton btClear = (ImageButton) findViewById(R.id.btClearFormular);
-
     	Display display = getWindowManager().getDefaultDisplay();
     	
-    	LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(display.getWidth()/2, android.view.ViewGroup.LayoutParams.WRAP_CONTENT);
-//    	lp.setMargins(Math.round((display.getWidth()/2 * (metrics.densityDpi/160f))/2) , 0, 0, 0);
-//    	lp.width = Math.round(((66 * (metrics.densityDpi/160f))));
-//    	lp.height = Math.round(((66 * (metrics.densityDpi/160f))));
-    	btApply.setLayoutParams(lp);
-    	btClear.setLayoutParams(new LinearLayout.LayoutParams(display.getWidth()/2, android.view.ViewGroup.LayoutParams.WRAP_CONTENT));
+    	@SuppressWarnings("deprecation")
+		LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(display.getWidth()/2, android.view.ViewGroup.LayoutParams.WRAP_CONTENT);
+
+    	getBtApply().setLayoutParams(lp);
+    	getBtClear().setLayoutParams(lp);
 	}
 }

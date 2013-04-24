@@ -140,6 +140,7 @@ public void discardSaving(){
 	  getWritableDatabase().execSQL("DROP TABLE IF EXISTS saving" );
   }
   
+	@Deprecated
   public void createNewTable(String name, List<String> attributes){
 	  TABLE_NAME = name;
 	  DATABASE_CREATE = new StringBuilder();

@@ -1,16 +1,14 @@
 package com.statistics.timestatistics;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import com.common.StringModifier;
-import com.statistics.timestatistics.business.StatisticClock;
+import com.statistics.timestatistics.business.ResetableStopwatch;
 import com.statistics.timestatistics.dbcontroller.DBConnection;
-import com.statistics.timestatistics.dbcontroller.PersistensStatisticHandler;
+import com.statistics.timestatistics.definition.ClockState;
 
 import android.content.res.Configuration;
 import android.content.res.Resources;
-import android.database.Cursor;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.view.Display;
@@ -28,7 +26,10 @@ import android.widget.TextView;
 
 public class SelectedStatisticView extends Acquisition {
 	
-	int counter = 0;
+	/**
+	 * The Position of the value-view evaluated by Id (start by 1)
+	 */
+	int counter = 1;
  
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -40,7 +41,7 @@ public class SelectedStatisticView extends Acquisition {
 		final String currentStatistic = StringModifier.deleteSpaces(loadSelectedTable());
 		
 		loadStaistic();
-		prepareLayout(statistic.getAttributes());
+		prepareLayout(statistic.getAttributesWithoutIdAndTime());
 		
 		updateElements();
 		
@@ -80,31 +81,32 @@ public class SelectedStatisticView extends Acquisition {
 	private void updateElements(){
 		LinearLayout linLay = (LinearLayout) findViewById(R.id.tableViewSpecificAttributes);
 		
-		if( statistic.isEmpty()){
+		if( statistic.getAllValues().isEmpty()){
 			TextView tvNoValues = new TextView(getApplicationContext());
 			tvNoValues.setText("No Values");
 			LayoutParams lp = new LayoutParams(android.view.ViewGroup.LayoutParams.MATCH_PARENT, android.view.ViewGroup.LayoutParams.WRAP_CONTENT);
 			tvNoValues.setLayoutParams(lp);
 			tvNoValues.setGravity(Gravity.CENTER);
+			linLay.addView(tvNoValues);
 		}
 		else{
 		int elementIndex = 1;
-		for(int i = 1; i < statistic.getAttributeCount()-1; i++){
-			((EditText) linLay.getChildAt(elementIndex)).setText(statistic.getValueAt(counter, i));
+		for(int i = 0; i < statistic.getAttributeCount()-2; i++){
+			((EditText) linLay.getChildAt(elementIndex)).setText(statistic.getValueWithoutTimeAt(counter, i));
 		}
 		
-		clock = new StatisticClock((Chronometer) findViewById(R.id.clockValue));
+		clock = new ResetableStopwatch((Chronometer) findViewById(R.id.clockValue));
 		updateClock();
 		clock.showTime();
 		
 		}
 		
-		if(counter == 0){
+		if(counter == 1){
 			getBtPrev().setEnabled(false);
 			getBtNext().setEnabled(true);
 		}
 		
-		else if ( counter == statistic.getValueCount()-1){
+		else if ( counter == statistic.getValueCount()){
 			getBtNext().setEnabled(false);
 			getBtPrev().setEnabled(true);
 		}
@@ -119,6 +121,10 @@ public class SelectedStatisticView extends Acquisition {
 			getBtPrev().setEnabled(false);
 		}
 		
+	}
+	@Override
+	protected void updateClock() {
+		clock.updateClock(statistic.getTimeAt(counter), new ClockState(0));
 	}
 	
 	@Override
@@ -140,6 +146,7 @@ public class SelectedStatisticView extends Acquisition {
 		return (Button) findViewById(R.id.btAppendValue);
 	}
 	
+	@SuppressWarnings("deprecation")
 	private void prepareLayout(List<String> attributes) {
 		LinearLayout linLay = (LinearLayout) findViewById(R.id.tableViewSpecificAttributes);
 		
@@ -166,33 +173,6 @@ public class SelectedStatisticView extends Acquisition {
 		getBtNext().setLayoutParams(layPara);
 	}
 
-	private List<String> loadAttributes(String table) {
-		List<String> list = new ArrayList<String>();
-		
-		String sql = "select * from " + table;
-		
-		DBConnection db = new DBConnection(getApplicationContext());
-		Cursor result = db.getReadableDatabase().rawQuery(sql, null);
-		
-		//Das erste Attribut ist die Id und das letzte die Zeit
-		for(int i = 1; i < result.getColumnCount()-1; i++){
-			list.add(result.getColumnName(i).toString());
-		}
-	
-		db.close();
-		return list;
-	}
-	
-//	private String loadSelectedTable() {
-//		DBConnection db = new DBConnection(getApplicationContext());
-//		Cursor result = db.getSavedInstance();
-//		result.moveToFirst();
-//		String currentStatistic = result.getString(0);
-//		
-//		db.close();
-//		return currentStatistic;
-//	}
-	
 	@SuppressWarnings("deprecation")
 	private void updateLayout(View view) {
 		

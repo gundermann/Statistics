@@ -72,12 +72,13 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
 		android:text="@string/ok"
-		 android:background="@color/text"
+		 android:background="@drawable/blue_btn"
         android:textColor="@color/white"
         android:textSize="40sp"
         android:layout_marginTop="40dp"
         android:paddingTop="20dp"
         android:paddingBottom="20dp"
+        style="@style/ButtonText"
         />
     
 </LinearLayout>

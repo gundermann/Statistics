@@ -15,13 +15,17 @@
             android:id="@+id/btApplyNewValue"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@android:drawable/ic_input_add" />
+            android:src="@android:drawable/ic_input_add"
+            android:background="@drawable/blue_nav_btn"
+            style="@style/ButtonText" />
 
         <ImageButton
             android:id="@+id/btClearFormular"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@android:drawable/ic_delete" />
+            android:src="@android:drawable/ic_delete"
+            android:background="@drawable/blue_nav_btn"
+            style="@style/ButtonText" />
         
     </LinearLayout>
     
@@ -37,18 +41,38 @@
         android:textColor="#2E64FE"
         android:textColorHint="#2E64EE"/>
     
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal" >
+        
     <Button 
         android:id="@+id/clockButton"
         android:text="@string/startStop"
-        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:background="@color/text"
         android:textColor="@color/white"
         android:paddingTop="20dp"
         android:paddingBottom="20dp"
         android:layout_marginBottom="20dp"
-        android:textSize="30sp"/>
+        android:textSize="30sp"
+        android:background="@drawable/blue_btn"
+        style="@style/ButtonText"/>
     
+    <!--  	
+    <Button 
+        android:id="@+id/clockButtonReset"
+        android:text="@string/reset"
+        android:layout_height="wrap_content"
+        android:textColor="@color/white"
+        android:paddingTop="20dp"
+        android:paddingBottom="20dp"
+        android:layout_marginBottom="20dp"
+        android:textSize="30sp"
+        android:background="@drawable/blue_btn"
+        style="@style/ButtonText"/>
+    
+    -->
+    </LinearLayout>
     
     
     

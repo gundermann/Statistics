@@ -80,7 +80,21 @@ public class Statistic {
 
 	public void addValue(List<String> valuesToSave, Long time) {
 		valuesToSave.add(String.valueOf(time));
-		values.put(values.size(), valuesToSave);
+		values.put(values.size()+1, valuesToSave); 
+	}
+	
+	public long getTimeAt(int id){
+		if(values.get(id) == null)
+			return 0L;
+		else
+			return Long.parseLong(values.get(id).get(getAttributeCount()-2));
+	}
+
+	public String getValueWithoutTimeAt(int counter, int i) {
+		List<String> valueListWithoutTime = new ArrayList<String>();
+		valueListWithoutTime.addAll(values.get(counter));
+		valueListWithoutTime.remove(valueListWithoutTime.size()-1);
+		return valueListWithoutTime.get(i);
 	}
 	
 	

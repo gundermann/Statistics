@@ -3,5 +3,8 @@
     <color name="background">#FFFBFB</color>
     <color name="white">#FFFFFF</color>
     <color name="black">#000000</color>
+    <color name="text">#449def</color>
+    <!--
     <color name="text">#2E64EE</color>
+    -->
 </resources>

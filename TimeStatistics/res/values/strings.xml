@@ -11,9 +11,11 @@
     <string name="ok">OK</string>
     <string name="newAttribute">Enter new Attribute:</string>
     <string name="startStop">Start</string>
+    <string name="reset">Reset</string>
     <string name="newAttributeType">Type</string>
     <string name="chronometer_initial_format">Initial format:<xliff:g id="initial-format">%</xliff:g></string>
 	<string name="newValue">New value</string>
 	<string name="closeApp">press on back to close</string>
-	<string name="alertTitle">Please enter a title</string>
+	<string name="alertTitle">Please enter a title beginning with a letter</string>
+	<string name="alertAttribute">Please enter attributenames beginning with a letter</string>
 </resources>
