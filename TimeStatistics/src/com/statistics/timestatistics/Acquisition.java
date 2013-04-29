@@ -9,6 +9,7 @@ import com.statistics.timestatistics.business.ResetableStopwatch;
 import com.statistics.timestatistics.dbcontroller.DBConnection;
 import com.statistics.timestatistics.dbcontroller.PersistensStatisticHandler;
 import com.statistics.timestatistics.dbcontroller.PersistensTimeHandler;
+import com.statistics.timestatistics.dbcontroller.PersistensValueHandler;
 import com.statistics.timestatistics.definition.NoClockStateException;
 
 import android.app.Activity;
@@ -59,7 +60,8 @@ public class Acquisition extends Activity{
 		prepareLayout(attributes);
 		
 		updateClock();
-		
+		updateValues();
+		discardSavedTime();
 		
 		/**
 		 * Clears all Attributevalues and resets clock
@@ -104,7 +106,10 @@ public class Acquisition extends Activity{
 
 				DBConnection db = new DBConnection(getApplicationContext());
 				final PersistensStatisticHandler psh = new PersistensStatisticHandler(db, loadSelectedTable());
-				statistic.addValue(getValuesToSave(), clock.getTime());
+				if(clock.getState().getStateNumber() == 1)
+					statistic.addValue(getValuesToSave(), clock.getTime());
+				else
+					statistic.addValue(getValuesToSave(), clock.getLastTime());
 				psh.saveStatistic(statistic);
 				db.close();
 
@@ -121,6 +126,24 @@ public class Acquisition extends Activity{
 			}
 
 		});
+	}
+
+	private void updateValues() {
+		LinearLayout linLay = (LinearLayout) findViewById(R.id.acquisitionLayout);
+		
+		DBConnection dbc = new DBConnection(getApplicationContext());
+		PersistensValueHandler pth = new PersistensValueHandler(dbc, getSavingTable());
+		
+		if(pth.readValues().size() > 0){
+		int valueCounter = 0;
+		for(int i = 0; i < linLay.getChildCount(); i++){
+			if(linLay.getChildAt(i) instanceof EditText){
+				((EditText) linLay.getChildAt(i)).setText(pth.readValues().get(valueCounter).toString());
+				valueCounter++;
+			}
+		}
+		}
+		dbc.close();
 	}
 
 	private void stopClock() {
@@ -165,7 +188,7 @@ public class Acquisition extends Activity{
 		else if( clock.getState().getStateNumber() == 2 ){
 			clock.showTime();
 		}
-		discardSavedTime();
+//		discardSavedTime();
 	}
 	
 	private void discardSavedTime() {

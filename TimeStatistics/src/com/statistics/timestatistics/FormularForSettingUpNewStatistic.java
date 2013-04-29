@@ -23,11 +23,7 @@ import android.widget.EditText;
 
 public class FormularForSettingUpNewStatistic extends Acquisition{
 	
-	//Zwischenspeicher
-//	private HashMap<String, String> attributes = new HashMap<String, String>();
 	private List<String> attributes = new ArrayList<String>();
-	private static int DIALOG_TITLE = 1;
-	
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -48,8 +44,6 @@ public class FormularForSettingUpNewStatistic extends Acquisition{
 //			}
 //		});
 		
-		
-		//FIXME needs a evaluation of the attributes don't use numbers for attributes
 		Button btApplyNewStatistic = (Button) findViewById(R.id.btApplyNewStatistic);
 		btApplyNewStatistic.setOnClickListener(new OnClickListener() {
 			@SuppressLint("UseSparseArrays")

@@ -33,8 +33,6 @@ public class PersistensTimeHandler {
 		catch(CursorIndexOutOfBoundsException cioobe){
 			System.out.println("No base saved");
 			return time;
-		}finally{
-			dbc.close();
 		}
 		
 		return time;
