@@ -32,6 +32,7 @@ public final class R {
         public static final int blue_list_item=0x7f020001;
         public static final int blue_nav_btn=0x7f020002;
         public static final int ic_launcher=0x7f020003;
+        public static final int statistic_icon=0x7f020004;
     }
     public static final class id {
         public static final int acquisitionLayout=0x7f090000;
