@@ -124,6 +124,8 @@ public class SelectedStatisticView extends Acquisition {
 	}
 	@Override
 	protected void updateClock() {
+		if(isAcquisition())
+			super.updateClock();
 		clock.updateClock(statistic.getTimeAt(counter), new ClockState(0));
 	}
 	

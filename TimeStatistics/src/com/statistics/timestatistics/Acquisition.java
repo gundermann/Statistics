@@ -64,7 +64,7 @@ public class Acquisition extends Activity{
 		discardSavedTime();
 		
 		/**
-		 * Clears all Attributevalues and resets clock
+		 * Clears all Attribute values and resets clock
 		 */
 		getBtClear().setOnClickListener(new AdapterView.OnClickListener() {
 			
@@ -97,7 +97,7 @@ public class Acquisition extends Activity{
 		});
 		
 		/**
-		 * Applys the current time and values for current statistic
+		 * Applies the current time and values for current statistic
 		 */
 		getBtApply().setOnClickListener(new AdapterView.OnClickListener() {
 			
