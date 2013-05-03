@@ -12,7 +12,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
 
-public class DBConnection extends SQLiteOpenHelper{
+public class DBConnection extends SQLiteOpenHelper{ 
 	public static final String TAG = DBConnection.class.getSimpleName();
 	
 	//Names and attributes of table main
