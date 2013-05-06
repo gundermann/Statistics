@@ -18,7 +18,7 @@ public class ResetableStopwatch extends Stopwatch{
 		this.setState(0);
 		this.setLastTime(0L);
 		getClock().stop();
-		showTime();
+		showTimeWithNewBase();
 	}
 	
 }

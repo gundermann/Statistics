@@ -97,7 +97,7 @@ public class SelectedStatisticView extends Acquisition {
 		
 		clock = new ResetableStopwatch((Chronometer) findViewById(R.id.clockValue));
 		updateClock();
-		clock.showTime();
+		clock.showTimeWithNewBase();
 		
 		}
 		

@@ -26,6 +26,10 @@ private Long lastTime;
 		this.lastTime = time;
 	}
 	
+	public void updateClockByBase(Long base){
+		this.clock.setBase(base);
+	}
+	
 	/**
 	 * Stops the clock
 	 */
@@ -51,7 +55,7 @@ private Long lastTime;
 			break;
 
 		case 1:
-			clock.setBase(SystemClock.elapsedRealtime()-this.lastTime);
+//			clock.setBase(SystemClock.elapsedRealtime()-this.lastTime);
 			break;
 			
 		case 2:
@@ -88,8 +92,11 @@ private Long lastTime;
 	}
 
 
-	public void showTime() {
+	public void showTimeWithNewBase() {
 		clock.setBase(SystemClock.elapsedRealtime()-this.lastTime);
+	}
+	
+	public void showTime(){
 		clock.start();
 		clock.stop();
 	}

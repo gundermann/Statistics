@@ -35,7 +35,6 @@ public class Acquisition extends Activity{
 	
 	ResetableStopwatch clock;
 	String time = null;
-	boolean reset = true;
 	int counter;
 	protected AlertDialog dialog = null;
 	private String savingTable = "timesaving789";
@@ -179,6 +178,7 @@ public class Acquisition extends Activity{
 		dbc.close();
 		if( clock.getState().getStateNumber()==1 ){
 			try {
+				clock.getClock().setBase(pth.getSavedTime());
 				clock.handleStart(clock.getState());
 				getBtClockStartStop().setText("Stop");
 			} catch (NoClockStateException e) {
@@ -186,9 +186,8 @@ public class Acquisition extends Activity{
 			}
 		}
 		else if( clock.getState().getStateNumber() == 2 ){
-			clock.showTime();
+			clock.showTimeWithNewBase();
 		}
-//		discardSavedTime();
 	}
 	
 	private void discardSavedTime() {
@@ -331,7 +330,7 @@ public class Acquisition extends Activity{
 		dbc.close();
 		dbc = new DBConnection(this.getApplicationContext());
 		if ( clock.getState().getStateNumber() == 1)
-			dbc.insertValueIntoStatistic("timesaving789", values, String.valueOf(clock.getTime()));
+			dbc.insertValueIntoStatistic("timesaving789", values, String.valueOf(clock.getClock().getBase()));
 		else
 			dbc.insertValueIntoStatistic("timesaving789", values, String.valueOf(clock.getLastTime()));
 		dbc.close();
