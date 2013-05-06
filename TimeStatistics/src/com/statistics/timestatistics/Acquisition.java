@@ -242,6 +242,19 @@ public class Acquisition extends Activity{
 		return persistensTimeHandler;
 	}
 	
+	@Override
+	public void onPause(){
+		if(isAcquisition())
+			saveTimeAndValues();
+		super.onPause();
+	}
+	
+	@Override
+	public void onRestart(){
+		super.onRestart();
+		if(isAcquisition())
+			setAcquisition();
+	}
 	
 	@Override
 	public void onBackPressed(){
